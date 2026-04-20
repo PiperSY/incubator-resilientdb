@@ -27,7 +27,7 @@ server_bin=${server_name}
 
 bazel run //benchmark/protocols/pbft:kv_service_tools -- $PWD/config_out/client.config 
 
-sleep 60
+sleep 100
 
 echo "benchmark done"
 count=1

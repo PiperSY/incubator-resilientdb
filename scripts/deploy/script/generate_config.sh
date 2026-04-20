@@ -41,7 +41,7 @@ CERT_TOOLS_BIN=${base_path}/bazel-bin/tools/certificate_tools
 CONFIG_TOOLS_BIN=${base_path}/bazel-bin/tools/generate_region_config
 
 USERNAME=ubuntu
-BASE_PORT=17000
+BASE_PORT=20000
 CLIENT_NUM=1
 
 echo "" > client.config
@@ -69,7 +69,7 @@ do
   # create the public key and certificate
   if [ $(($idx+$CLIENT_NUM)) -gt $tot ] ; then
     $CERT_TOOLS_BIN ${output_cert_path} ${ADMIN_PRIVATE_KEY} ${ADMIN_PUBLIC_KEY} ${public_key} ${idx} ${ip} ${port} client
-    echo "${idx} ${ip} ${port}" >> client.config
+    echo "${idx} ${ip} ${port}" >> client.config.raw
   else
     $CERT_TOOLS_BIN ${output_cert_path} ${ADMIN_PRIVATE_KEY} ${ADMIN_PUBLIC_KEY} ${public_key} ${idx} ${ip} ${port} replica
     echo "${idx} ${ip} ${port}" >> server.config
@@ -80,3 +80,25 @@ done
 
 python3 ${CONFIG_TOOLS_BIN} ./server.config ./server.config.json ${TEMPLATE_PATH}
 mv server.config.json server.config
+
+python3 - <<'PY'
+import json
+
+replicas = []
+with open("client.config.raw", "r") as f:
+    for line in f:
+        line = line.strip()
+        if not line:
+            continue
+        idx, ip, port = line.split()
+        replicas.append({
+            "id": int(idx),
+            "ip": ip,
+            "port": int(port)
+        })
+
+with open("client.config", "w") as f:
+    json.dump({"replica_info": replicas}, f, indent=2)
+PY
+
+rm -f client.config.raw
