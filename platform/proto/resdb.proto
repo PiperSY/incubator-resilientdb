@@ -59,7 +59,15 @@ message Request {
         TYPE_CUSTOM_CONSENSUS = 19;
         TYPE_STATUS_SYNC = 20;
 
-        NUM_OF_TYPE = 21; // the total number of types.
+        TYPE_3PC_PREPARE = 21;
+        TYPE_3PC_VOTE_COMMIT = 22;
+        TYPE_3PC_VOTE_ABORT = 23;
+        TYPE_3PC_PRECOMMIT = 24;
+        TYPE_3PC_PRECOMMIT_ACK = 25;
+        TYPE_3PC_GLOBAL_COMMIT = 26;
+        TYPE_3PC_GLOBAL_ABORT = 27;
+
+        NUM_OF_TYPE = 28; // the total number of types.
                        // Used to create the collector.
     };
     int32 type = 1;
