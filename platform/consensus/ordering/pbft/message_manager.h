@@ -116,8 +116,14 @@ class MessageManager {
   void SetHighestPreparedSeq(uint64_t seq);
 
   void SetDuplicateManager(DuplicateManager* manager);
+
+  // Optional response filter used by sharded 3PC. The filter is evaluated after execution, before the response is placed on the send queue. 
+  // It can be used to gate responses until local POE certification, or to suppress responses that should only go to the coordinator shard. 
   void SetResponseFilter(std::function<bool(const Request&)> filter);
+  // Optional hook used by sharded 3PC/POE to create an execution proof after execution but before response queueing. The hook is passed the original request
+  // and the generated response, and can synchronously modify the response or trigger side effects such as emitting a proof request.
   void SetPostExecuteHook(PostExecuteHook hook);
+  // Optional POE response gate. The predicate is evaluated after execution but before response queueing to decide whether a response should be held until a later release event such as POE certification.
   void SetResponseHoldPredicate(ResponseHoldPredicate predicate);
   // Release or drop a held POE response for one transaction. Release still
   // passes through response_filter_, preserving coordinator-shard-only replies.

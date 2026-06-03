@@ -82,6 +82,7 @@ class ShardPOECommitment : public Commitment {
   std::string BuildPOERollbackDigest(uint64_t checkpoint_seq,
                                      uint32_t local_shard_id,
                                      const std::string& reason) const;
+  // Send a local proof message to the shard leader, who collects matching proofs and broadcasts a certificate when the threshold is reached. 
   int SendPOEProof(const Request& request,
                    const BatchUserResponse& response);
   // Builds the local leader certificate from matching proof signatures.
@@ -102,7 +103,7 @@ class ShardPOECommitment : public Commitment {
   using ProofKey = std::pair<TxnKey, std::string>;
 
   struct ProofBucket {
-    // Representative proof request for this digest; copied into TYPE_POE_CERT.
+    // Representative proof request for this digest copied into TYPE_POE_CERT.
     Request proof_request;
     // Unique local replica proof signatures that match this digest.
     std::map<int64_t, SignatureInfo> signatures_by_sender;
